@@ -14,6 +14,7 @@ import HomeDrawer from './src/pages/HomeDrawer'
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { Store } from "./src/redux/store";
+import { TakeCamera } from "./src/components";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,9 +35,10 @@ export default function App() {
       <Provider store={Store}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="LoginStorage" component={LoginStorage}/>
           <Stack.Screen name="LoginSQLite" component={LoginDB}/>
+          <Stack.Screen name="LoginStorage" component={LoginStorage}/>
           <Stack.Screen name="HomeDrawer" component={HomeDrawer} />
+          <Stack.Screen name="TakeCamera" component={TakeCamera} />
         </Stack.Navigator>
       </NavigationContainer>
       </Provider>

@@ -3,61 +3,44 @@ import React, { useEffect, useState } from "react";
 import { styles } from "../styles";
 import { CustomBtn } from "../components";
 import { useNavigation } from "@react-navigation/native";
-import SQLite from "react-native-sqlite-storage";
-
-// SQLite.enablePromise(true);
-  
-// var db = SQLite.openDatabase(
-//   { name: "MainDB", location: "default" },
-//   (success) => {
-//     console.log(success);
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+import { initDatabase, getUserById, insertUser } from '../services/database.js';
+import { useDispatch } from 'react-redux'
+import { setUser } from '../redux/action';
 
 const LoginDB = () => {
-  const naviagtion = useNavigation();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  //   const userData = db.transaction((tx) => {
-  //     tx.executeSql(
-  //       "SELECT * FROM Users WHERE id=?",
-  //       [1],
-  //       (tx, results) => {
-  //         console.log(results);
-  //       },
-  //       (err) => {
-  //         console.log(err);
-  //       }
-  //     );
-  //   });
-
   useEffect(() => {
-    const createTable = async () => {
-      await db.transaction(async (tx) => {
-        await tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS Users (id INTEGER AUTOINCREMENT PRIMARY KEY, name TEXT, email TEXT)"
-        );
+    initDatabase()
+      .then(() => {
+        console.log('Database initialized');
+      })
+      .catch(error => {
+        console.error('Error initializing database:', error);
       });
-    };
-    createTable();
-    // userData();
+
+    getUserById(1)
+      .then((user) => {
+        dispatch(setUser(user));
+        if(user) return navigation.navigate('HomeDrawer', {screen: "Home"})
+      })
+      .catch((err) => {
+        console.log("error while retriving user", err);
+      });
   }, []);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (name === "" || email === "") {
       return Alert.alert("Warning", "Please fill all the fields");
     } else {
-      // await db.transaction((tx) => {
-      //   tx.executeSql("INSERT INTO Users (name, email) VALUES (?,?)", [
-      //     name,
-      //     email,
-      //   ]);
-      // });
-      naviagtion.navigate("HomeDrawer");
+      insertUser(name, email).then((insertId) => {
+        console.log(insertId)
+      }).catch((err) => {
+        console.log("error while create user", err);
+      })
     }
   };
   return (

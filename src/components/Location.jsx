@@ -3,6 +3,7 @@ import GeoLocation from "react-native-geolocation-service";
 import React, { useState } from "react";
 import { styles } from "../styles";
 import { useNavigation } from "@react-navigation/native";
+import GoogleMap from "./GoogleMap";
 
 const Location = () => {
     const navigation = useNavigation();
@@ -51,6 +52,7 @@ const Location = () => {
       <Button style={styles.button} onPress={() => navigation.navigate('Map')} title="Go To User Data with Map" />
       <Button style={styles.button} onPress={() => navigation.navigate('Flat')} title="Go To User Data with FlatList" />
       {location && <Text>{location.latitude}</Text>}
+      <GoogleMap />
     </View>
   );
 };

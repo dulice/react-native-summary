@@ -8,3 +8,5 @@ export { default as Btn } from "./Btn";
 export { default as Location } from "./Location";
 export { default as CustomBtn } from "./CustomBtn";
 export { default as Logout } from "./Logout";
+export { default as GoogleMap } from "./GoogleMap";
+export { default as TakeCamera } from "./TakeCamera";
