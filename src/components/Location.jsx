@@ -4,55 +4,33 @@ import React, { useState } from "react";
 import { styles } from "../styles";
 import { useNavigation } from "@react-navigation/native";
 import GoogleMap from "./GoogleMap";
+import Noti from "./Noti";
+import * as ExpoLocation from 'expo-location';
+import CustomBtn from "./CustomBtn";
 
 const Location = () => {
-    const navigation = useNavigation();
-  const [location, setLocation] = useState(null);
-  const requestPermissionLocation = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: "Geolocation Permission",
-        message: "Can we access your location",
-        buttonNeutral: "Ask me later",
-        buttonNegative: "Cancel",
-        buttonPositive: "Ok",
-      }
-    );
-    if (granted === "granted") {
-      console.log("Location Access");
-    } else {
-      console.log("Deny");
-    }
-  };
-  const getLocation = () => {
-    const result = requestPermissionLocation();
-    result.then(res => {
-      console.log('res is:', res);
-      if (res) {
-        Geolocation.getCurrentPosition(
-          position => {
-            console.log(position);
-          },
-          error => {
-            // See error code charts below.
-            console.log(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
-      }
+    const [mapRegion, setmapRegion] = useState({
+      latitude: 37.78825,
+      longitude: -122.4324,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
     });
-    console.log(location);
+
+  const getLocation = async () => {
+    const { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+    if(status === "granted") {
+      const {coords} = await ExpoLocation.getCurrentPositionAsync({});
+      setmapRegion({...mapRegion, latitude: coords.latitude, longitude: coords.longitude})
+    }
   };
   return (
     <View>
-      <Text>Location</Text>
-      <Button style={styles.button} onPress={getLocation} title="Get Current Location" />
-      <Button style={styles.button} onPress={() => navigation.navigate('Input')} title="Go To User Register" />
-      <Button style={styles.button} onPress={() => navigation.navigate('Map')} title="Go To User Data with Map" />
-      <Button style={styles.button} onPress={() => navigation.navigate('Flat')} title="Go To User Data with FlatList" />
-      {location && <Text>{location.latitude}</Text>}
-      <GoogleMap />
+      <Noti />
+      <View style={styles.card}>
+        <Text style={styles.header}>Location</Text>
+        <CustomBtn onPress={getLocation} title="Get Current Location" />
+      </View>
+      <GoogleMap mapRegion={mapRegion}/>
     </View>
   );
 };
